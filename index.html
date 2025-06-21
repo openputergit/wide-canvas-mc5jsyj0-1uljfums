@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Maintenance System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal { display: none; }
+        .modal.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold">Vehicle Maintenance System</h1>
+                <button onclick="toggleModal('addVehicleModal')" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50">
+                    Add Vehicle
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container mx-auto p-4">
+            <!-- Dashboard Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-semibold text-gray-700">Total Vehicles</h3>
+                    <p class="text-2xl font-bold text-blue-600" id="totalVehicles">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-semibold text-gray-700">Active Assignments</h3>
+                    <p class="text-2xl font-bold text-green-600" id="activeAssignments">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-semibold text-gray-700">Pending Maintenance</h3>
+                    <p class="text-2xl font-bold text-red-600" id="pendingMaintenance">0</p>
+                </div>
+            </div>
+
+            <!-- Vehicle List -->
+            <div class="bg-white rounded-lg shadow p-4">
+                <h2 class="text-xl font-semibold mb-4">Vehicle Records</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full table-auto">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Vehicle No.</th>
+                                <th class="px-4 py-2 text-left">Type</th>
+                                <th class="px-4 py-2 text-left">Assigned To</th>
+                                <th class="px-4 py-2 text-left">Last Refuel</th>
+                                <th class="px-4 py-2 text-left">Mileage</th>
+                                <th class="px-4 py-2 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehicleList">
+                            <!-- JavaScript will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Add Vehicle Modal -->
+        <div id="addVehicleModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <h2 class="text-xl font-semibold mb-4">Add New Vehicle</h2>
+                <form id="addVehicleForm" class="space-y-4">
+                    <div>
+                        <label class="block mb-1">Vehicle Number</label>
+                        <input type="text" name="vehicleNo" class="w-full border rounded p-2" required>
+                    </div>
+                    <div>
+                        <label class="block mb-1">Vehicle Type</label>
+                        <select name="type" class="w-full border rounded p-2" required>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="CNG">CNG</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1">Initial Odometer Reading (km)</label>
+                        <input type="number" name="initialReading" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="toggleModal('addVehicleModal')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Add Vehicle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Record Modal -->
+        <div id="addRecordModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <h2 class="text-xl font-semibold mb-4">Add Record</h2>
+                <form id="addRecordForm" class="space-y-4">
+                    <input type="hidden" id="recordVehicleId">
+                    <div>
+                        <label class="block mb-1">Record Type</label>
+                        <select name="recordType" class="w-full border rounded p-2" required>
+                            <option value="refuel">Refuel</option>
+                            <option value="repair">Repair</option>
+                            <option value="assignment">Driver Assignment</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-1">Details</label>
+                        <input type="text" name="details" class="w-full border rounded p-2" required>
+                    </div>
+                    <div>
+                        <label class="block mb-1">Current Odometer Reading (km)</label>
+                        <input type="number" name="reading" class="w-full border rounded p-2" required>
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="toggleModal('addRecordModal')" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Save Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let vehicles = JSON.parse(localStorage.getItem('vehicles')) || [];
+        let records = JSON.parse(localStorage.getItem('records')) || [];
+
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle('active');
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalVehicles').textContent = vehicles.length;
+            const activeAssignments = records.filter(r => r.type === 'assignment' && !r.endDate).length;
+            document.getElementById('activeAssignments').textContent = activeAssignments;
+            document.getElementById('pendingMaintenance').textContent = 0; // Can be implemented based on maintenance schedule
+        }
+
+        function renderVehicles() {
+            const vehicleList = document.getElementById('vehicleList');
+            vehicleList.innerHTML = '';
+            
+            vehicles.forEach(vehicle => {
+                const lastRefuel = records
+                    .filter(r => r.vehicleId === vehicle.id && r.type === 'refuel')
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+                
+                const currentAssignment = records
+                    .filter(r => r.vehicleId === vehicle.id && r.type === 'assignment' && !r.endDate)[0];
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border-t px-4 py-2">${vehicle.vehicleNo}</td>
+                    <td class="border-t px-4 py-2">${vehicle.type}</td>
+                    <td class="border-t px-4 py-2">${currentAssignment ? currentAssignment.details : 'Unassigned'}</td>
+                    <td class="border-t px-4 py-2">${lastRefuel ? new Date(lastRefuel.date).toLocaleDateString() : 'No refuel'}</td>
+                    <td class="border-t px-4 py-2">${calculateMileage(vehicle.id).toFixed(2)} km/l</td>
+                    <td class="border-t px-4 py-2">
+                        <button onclick="addRecord('${vehicle.id}')" class="text-blue-600 hover:text-blue-800">
+                            <i class="bi bi-plus-circle"></i> Add Record
+                        </button>
+                    </td>
+                `;
+                vehicleList.appendChild(row);
+            });
+        }
+
+        function calculateMileage(vehicleId) {
+            const vehicleRecords = records.filter(r => r.vehicleId === vehicleId && r.type === 'refuel');
+            if (vehicleRecords.length < 2) return 0;
+            
+            const lastTwo = vehicleRecords.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 2);
+            const distanceCovered = lastTwo[0].reading - lastTwo[1].reading;
+            const fuelConsumed = parseFloat(lastTwo[0].details.split(' ')[0]); // Assuming details format: "XX liters"
+            
+            return distanceCovered / fuelConsumed;
+        }
+
+        document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const vehicle = {
+                id: Date.now().toString(),
+                vehicleNo: formData.get('vehicleNo'),
+                type: formData.get('type'),
+                initialReading: parseInt(formData.get('initialReading'))
+            };
+            vehicles.push(vehicle);
+            localStorage.setItem('vehicles', JSON.stringify(vehicles));
+            toggleModal('addVehicleModal');
+            renderVehicles();
+            updateDashboard();
+            e.target.reset();
+        });
+
+        function addRecord(vehicleId) {
+            document.getElementById('recordVehicleId').value = vehicleId;
+            toggleModal('addRecordModal');
+        }
+
+        document.getElementById('addRecordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const record = {
+                id: Date.now().toString(),
+                vehicleId: document.getElementById('recordVehicleId').value,
+                type: formData.get('recordType'),
+                details: formData.get('details'),
+                reading: parseInt(formData
+                .get('reading')),
+                date: new Date().toISOString()
+            };
+            records.push(record);
+            localStorage.setItem('records', JSON.stringify(records));
+            toggleModal('addRecordModal');
+            renderVehicles();
+            updateDashboard();
+            e.target.reset();
+        });
+
+        // Initial render
+        renderVehicles();
+        updateDashboard();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
